@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+
 import { api } from '../lib/api';
 import { Link } from 'react-router-dom';
 import { MessageSquare, Plus, Upload, Search, Clock, CheckCircle, AlertTriangle, Zap, ArrowLeft } from 'lucide-react';
@@ -23,7 +24,10 @@ const Complaints = () => {
     priority: 'medium'
   });
   const [trackingId, setTrackingId] = useState('');
+  const [complaintDetails, setComplaintDetails] = useState<any>(null); // This will store fetched complaint data
   const [file, setFile] = useState(null);
+
+
 
   const handleFileChange = (e) => {
   setFile(e.target.files[0]); // Store the selected file
@@ -95,7 +99,7 @@ const Complaints = () => {
   }
 };
 
-  const handleTrackComplaint = async () => {
+const handleTrackComplaint = async () => {
   if (!trackingId.trim()) {
     toast.error('Please enter a tracking ID');
     return;
@@ -113,11 +117,10 @@ const Complaints = () => {
       toast.error('No complaint found with the given ID');
     }
   } catch (error) {
+    console.error(error);
     toast.error('Failed to track complaint');
   }
 };
-
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-red-50">
       {/* Header */}
@@ -339,10 +342,13 @@ const Complaints = () => {
                       <Search className="h-4 w-4 mr-2" />
                       Track
                     </Button>
-                  </div>
+                  </div>  
                 </div>
               </CardContent>
             </Card>
+
+            
+
 
             {/* Sample Complaint Status */}
             <div className="grid gap-4">

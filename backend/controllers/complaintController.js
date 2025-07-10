@@ -31,11 +31,37 @@ exports.addComplaint = async (req, res) => {
       priority,
       attachment: file, // Save the file path in the database
       status: 'Pending',
+      trackingId: customerId,
     });
 
     await newComplaint.save();
     res.status(201).json(newComplaint);
   } catch (err) {
+    console.error(err);
     res.status(400).json({ error: 'Failed to create complaint' });
+  }
+};
+
+// @desc    Track a complaint using trackingId
+// @route   GET /api/complaints/:trackingId
+// @access  Public
+// @desc    Track a complaint using trackingId
+// @route   GET /api/complaints/:trackingId
+// @access  Public
+exports.trackComplaint = async (req, res) => {
+  const { trackingId } = req.params; // Get trackingId from URL
+
+  try {
+    // Ensure that you're querying trackingId as a string
+    const complaint = await Complaint.findOne({ trackingId: trackingId });
+
+    if (!complaint) {
+      return res.status(404).json({ error: 'Complaint not found' });
+    }
+
+    res.json(complaint);  // Return the found complaint details
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to track complaint' });
   }
 };
