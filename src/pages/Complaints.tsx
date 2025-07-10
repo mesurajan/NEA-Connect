@@ -51,7 +51,34 @@ const Complaints = () => {
       priority: 'Medium',
       date: '2024-01-10',
       assignedTo: 'Billing Department'
-    }
+    },
+    {
+    id: 'NEA-2024-003',
+    category: 'Meter Problem',
+    description: 'Meter malfunction in the Lalitpur area',
+    status: 'Pending',
+    priority: 'High',
+    date: '2024-01-12',
+    assignedTo: 'Metering Team'
+  },
+  {
+    id: 'NEA-2024-004',
+    category: 'Voltage Fluctuation',
+    description: 'Voltage fluctuations causing appliance damage in Kathmandu',
+    status: 'In Progress',
+    priority: 'Urgent',
+    date: '2024-01-13',
+    assignedTo: 'Technical Team B'
+  },
+  {
+    id: 'NEA-2024-005',
+    category: 'New Connection',
+    description: 'Request for new electricity connection in Bhaktapur',
+    status: 'Resolved',
+    priority: 'Medium',
+    date: '2024-01-09',
+    assignedTo: 'Connection Team'
+  }
   ];
 
   const handleSubmit = async (e) => {
@@ -111,14 +138,13 @@ const handleTrackComplaint = async () => {
     if (response.status === 200) {
       // Display the complaint status or other details based on your API response
       toast.success('Complaint details found!');
-      console.log('Complaint details:', response.data);
+      setComplaintDetails(response.data);
       // Update your UI to show the complaint details here
     } else {
       toast.error('No complaint found with the given ID');
     }
   } catch (error) {
-    console.error(error);
-    toast.error('Failed to track complaint');
+    toast.error('No complaint found with the given ID');
   }
 };
   return (
@@ -346,6 +372,29 @@ const handleTrackComplaint = async () => {
                 </div>
               </CardContent>
             </Card>
+
+            {complaintDetails && (
+  <div className="mt-6">
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Complaint Details</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div>
+          <p><strong>Tracking ID:</strong> {complaintDetails.trackingId}</p>
+          <p><strong>Category:</strong> {complaintDetails.category}</p>
+          <p><strong>Description:</strong> {complaintDetails.description}</p>
+          <p><strong>Priority:</strong> {complaintDetails.priority}</p>
+          <p><strong>Status:</strong> {complaintDetails.status}</p>
+          <p><strong>Assigned to:</strong> {complaintDetails.assignedTo || 'Not Assigned'}</p>
+          <p><strong>Created At:</strong> {complaintDetails.createdAt}</p>
+          <p><strong>Updated At:</strong> {complaintDetails.updatedAt}</p>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+)}
+
 
             
 
