@@ -17,7 +17,22 @@ exports.getComplaints = async (req, res) => {
 // @access  Public
 exports.addComplaint = async (req, res) => {
   try {
-    const newComplaint = new Complaint(req.body);
+    const { name, phone, email, customerId, category, description, priority } = req.body;
+    const file = req.files ? req.files.attachment[0].path : null;  // Handle file upload
+
+    const newComplaint = new Complaint({
+      userId: req.body.userId, // Assuming userId comes from the frontend
+      name,
+      phone,
+      email,
+      customerId,
+      category,
+      description,
+      priority,
+      attachment: file, // Save the file path in the database
+      status: 'Pending',
+    });
+
     await newComplaint.save();
     res.status(201).json(newComplaint);
   } catch (err) {

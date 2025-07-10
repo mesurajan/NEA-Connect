@@ -23,6 +23,11 @@ const Complaints = () => {
     priority: 'medium'
   });
   const [trackingId, setTrackingId] = useState('');
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (e) => {
+  setFile(e.target.files[0]); // Store the selected file
+};
 
   const mockComplaints = [
     {
@@ -53,17 +58,28 @@ const Complaints = () => {
     return;
   }
 
+  const form = new FormData();
+  form.append('userId', '64c22fc8acbd7fa0f65fae80');  // Replace with dynamic userId
+  form.append('name', formData.name);
+  form.append('phone', formData.phone);
+  form.append('email', formData.email);
+  form.append('customerId', formData.customerId);
+  form.append('category', formData.category);
+  form.append('description', formData.description);
+  form.append('priority', formData.priority);
+
+  if (file) {
+    form.append('attachment', file);  // Append file if available
+  }
+
   try {
-    const response = await axios.post('http://localhost:5000/api/complaints', {
-      userId: '64c22fc8acbd7fa0f65fae80', // 🔁 Replace with dynamic userId when you implement auth
-      description: formData.description,
-      status: 'Pending'
+    const response = await axios.post('http://localhost:5000/api/complaints', form, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // Required to send files
+      },
     });
-
-    const complaint = response.data;
-    toast.success(`Complaint registered successfully! Your tracking ID is: ${complaint._id}`);
-
-    // Reset form
+    toast.success('Complaint registered successfully!');
+    // Reset form and file input
     setFormData({
       name: '',
       phone: '',
@@ -73,24 +89,34 @@ const Complaints = () => {
       description: '',
       priority: 'medium'
     });
+    setFile(null);
   } catch (error) {
-    console.error(error);
     toast.error('Failed to submit complaint');
   }
 };
 
+  const handleTrackComplaint = async () => {
+  if (!trackingId.trim()) {
+    toast.error('Please enter a tracking ID');
+    return;
+  }
 
-  
-
-  const handleTrackComplaint = () => {
-    if (!trackingId.trim()) {
-      toast.error('Please enter a tracking ID');
-      return;
-    }
+  try {
+    const response = await axios.get(`http://localhost:5000/api/complaints/${trackingId}`);
     
-    // Simulate tracking
-    toast.success('Complaint details found! Check below for status updates.');
-  };
+    if (response.status === 200) {
+      // Display the complaint status or other details based on your API response
+      toast.success('Complaint details found!');
+      console.log('Complaint details:', response.data);
+      // Update your UI to show the complaint details here
+    } else {
+      toast.error('No complaint found with the given ID');
+    }
+  } catch (error) {
+    toast.error('Failed to track complaint');
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-red-50">
@@ -265,7 +291,7 @@ const Complaints = () => {
                       <div className="flex text-sm text-gray-600">
                         <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500">
                           <span>Upload a file</span>
-                          <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*" />
+                          <input id="file-upload" name="file-upload" type="file" className="sr-only" accept="image/*"onChange={handleFileChange} />
                         </label>
                         <p className="pl-1">or drag and drop</p>
                       </div>
