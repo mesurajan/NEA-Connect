@@ -1,8 +1,19 @@
 import { Outage, ScheduleItem, Areas } from '@/types/loadShedding';
 
 export const districts = [
-  'Kathmandu', 'Lalitpur', 'Bhaktapur', 'Pokhara', 'Biratnagar', 
-  'Butwal', 'Dharan', 'Janakpur', 'Nepalgunj', 'Chitwan'
+  'Achham', 'Arghakhanchi', 'Baglung', 'Baitadi', 'Bajhang', 
+  'Bajura', 'Banke', 'Bara', 'Bardiya', 'Bhaktapur', 
+  'Bhojpur', 'Chitwan', 'Dadeldhura', 'Dhanusa', 'Dhankuta', 
+  'Dholkha', 'Dolakha', 'Dang', 'Gorkha', 'Gulmi', 
+  'Humla', 'Ilam', 'Jajarkot', 'Jhapa', 'Jumla', 
+  'Kailali', 'Kaski', 'Kathmandu', 'Kavrepalanchok', 'Khotang', 
+  'Lalitpur', 'Lamjung', 'Makwanpur', 'Manang', 'Morang', 
+  'Mugu', 'Mustang', 'Nawalparasi', 'Nuwakot', 'Okhaldhunga', 
+  'Palpa', 'Parsa', 'Parbat', 'Ramechhap', 'Rasuwa', 
+  'Rolpa', 'Rupandehi', 'Salyan', 'Sankhuwasabha', 'Sarlahi', 
+  'Sindhuli', 'Sindhupalchok', 'Siraaha', 'Solukhumbu', 'Sunsari', 
+  'Surkhet', 'Syangja', 'Tanahun', 'Taplejung', 'Terhathum', 
+  'Udayapur'
 ];
 
 export const areas: Areas = {
