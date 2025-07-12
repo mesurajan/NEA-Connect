@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
+
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -19,27 +20,44 @@ const Contact = () => {
     message: ''
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
 
-    // Simulate form submission
-    toast.success('Your message has been sent successfully! We will get back to you soon.');
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      category: '',
-      message: ''
+
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!formData.name || !formData.email || !formData.message) {
+    toast.error('Please fill in all required fields');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/api/contact', {
+
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
     });
-  };
+
+    if (response.ok) {
+      toast.success('Your message has been sent successfully!');
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        subject: '',
+        category: '',
+        message: ''
+      });
+    } else {
+      toast.error('Something went wrong. Please try again.');
+    }
+  } catch (error) {
+    toast.error('Failed to send message. Check your internet or try again later.');
+  }
+};
+
 
   const contactInfo = [
     {

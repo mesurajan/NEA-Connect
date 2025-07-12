@@ -5,6 +5,7 @@ const multer = require('multer');
 const gridfsStream = require('gridfs-stream');
 const fs = require('fs');
 const path = require('path');
+
 require('dotenv').config();
 
 // Import all route files
@@ -15,6 +16,8 @@ const applicationRoutes = require('./routes/applicationRoutes');
 const loadRoutes = require('./routes/loadRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const connectionRoutes = require('./routes/connectionRoutes');
+const contactRoutes = require('./routes/contact');
+
 
 // Set up Express
 const app = express();
@@ -23,6 +26,8 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+
 
 // MongoDB connection
 const conn = mongoose.createConnection(process.env.MONGO_URI, {
@@ -76,7 +81,9 @@ app.use('/api/bills', billRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/schedules', loadRoutes);
 app.use('/api/payments', paymentRoutes);
-app.use('/api/connections', connectionRoutes); 
+app.use('/api/connections', connectionRoutes);
+app.use('/api', contactRoutes); // ✅ This activates /api/contact route
+ 
 
 // Start the server
 mongoose.connect(process.env.MONGO_URI, {
