@@ -61,7 +61,8 @@ The payment can be done through eSewa, Khalti, and bank transfer as the platform
 ## Website Name:
 NEA Connect
 
-![Homepage Screenshot](https://i.imgur.com/iO82xwB.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/01.png?raw=true)
+
 ## Website Structure :
 -->Home  :
 
