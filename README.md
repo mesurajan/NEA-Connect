@@ -2,29 +2,30 @@
 ## Project Title:
 
 Digital Service Portal for NEA – Simplifying Access to Electricity Services in Nepal
-## Problem Statement 
+## Problem Statement :
 
 Even though digital governance seems to have increasingly become a necessity, a significant number of the fundamental services provided by the Nepal Electricity Authority (NEA) remain subject to the offline processes. The customers also have to traverse to NEA offices to undertake bill inquiries, issue complaints as well as power outages. This is one of the causes of inefficiency, huge lines, slow response, and poor satisfaction of the citizens. Lack of centralized and accessible platform bring in the disparity between the expectations of people as citizens on the one hand and the factual delivery of the services on the other. A digital transformation is urgently needed to make delivery of electricity-relevant services easy to the masses in public.
-## Introduction
+
+## Introduction :
 Nepal Electricity Authority (NEA) plays the crucial role of the national power system of the country as it deals with the production, transmission, and distribution of electricity to millions of customers in the country of Nepal. Although this organization is vast and its services are significant, a considerable number of services offered by NEA to citizens continue to operate with a predominance of offline work, which slows down the work and is inconvenient to citizens. Ordinary tasks like payment of electricity bills, complaints related to power services, and following up on the power outages or finding the office of NEA usually involve physical presence, long queues or follow-ups. The fact that there is a difference between the delivery of service and citizen expectations reveals the dire need to transform the public service model of NEA towards a digital experience.
 
 We suggest the introduction of the central and convenient digital service portal, called NEA Connect, that will transfer critical services of NEA to online. Its basic features, accessible through the web-based platform, include inspection of the electricity bills with the help of its customer ID, complaint registration with category-based search and optional photo uploading, real-time schedule of load-shedding, and provision of feedback to the NEA administration. Another benefit of the platform is that citizens are able to monitor the progress of their complaints thus, this helps in achieving transparency and it will lead to accountability. It also provides district-wise NEA office locator that would enable consumers to know their closest service office. The features are developed using easy technologies in order to make it responsive and inclusive over devices.
 
 NEA Connect is more than just about the convenience of the consumers; it is about lightening the workload of the NEA physical counters in requesting repetitive services encountered by the consumers. The system is capable of providing high efficiency to the user through the use of the latest web technology. The optional features are the admin dashboard that runs along with the NEA staff, to listen to the user complaints, post public announcements and update schedules. In short, this project will enhance transparency, timeliness and delivery of the electricity services in Nepal in general- and creating a more connected and digitally enabled future.
 
-## Objectives 
+## Objectives :
 •	Improve access to essential electricity services such as bill inquiries, power updates, and complaint registration.
 
 •	Reduce pressure on NEA’s physical counters by enabling digital self-service options.
 
 •	Increase transparency and user trust through status tracking and timely updates.
 
-## Scope of the Project
+## Scope of the Project :
 The  objective of the NEA Connect project is to conceptualize and operationalize a centralized and web-based digital space with an aim of digitalisation and optimizing the major functions of the Nepal Electricity Authority that are provided to the general citizenry. These services are electricity bills query, online payment, registering cases of complaints and monitoring of the same, up-to-date notification of load-shedding, branch office finder, and request of new electricity connection. The system will considerably lessen the dependency on physical office visits, wait lines and handicrafts in its systems by taking these important functions online. The data this will translate into increased accessibility of services by people in all parts of the country of Nepal.
 
 Moreover, the platform will also contain an admin dashboard to assist staff at NEA in processing citizen complaints, updating outage reports and user comments. Although the current form of the project will deal with the accessibility over the web, hardware-based meter connection, SMS messaging, and direct backend API connection to third-party payment processing services such as eSewa or Khalti will not be available even in this version. Nonetheless, these elaborate features can be inserted at later stages of development since, despite using a modular and scalable architecture, it is built leaving space to add such features.
 
-## Proposed Solution
+## Proposed Solution :
 The solution is a centralized digital platform named NEA Connect, offering the following features:
 
 Public Features :
@@ -107,8 +108,6 @@ NEA Connect
 ![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/05.png?raw=true)
 
 
-
-
 •	Bill inquiry (user can search the bill by their Customer ID ).
 
 ![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/06.png?raw=true)
@@ -130,11 +129,11 @@ NEA Connect
 •	New Connection Request (User can apply for new electricity connection to their property ).
 
 ![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/10.png?raw=true)
-## Methodology / Development Plan
+## Methodology / Development Plan :
 
 ![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/11.png?raw=true)
 
-## Target Users
+## Target Users "
 The main target users of this platform include:
 
 •	General Public / NEA Customers: Individuals seeking easy access to NEA services like bill checking, complaints, and feedback.
@@ -145,7 +144,7 @@ The main target users of this platform include:
 
 
 
-## Expected Outcomes
+## Expected Outcomes :
 
 •	Better User experience because it has user friendly web platform which will allow the customer to access the services online without physically visiting.
 
@@ -156,3 +155,13 @@ The main target users of this platform include:
 •	Scalable & Maintainable System which would be possible to expand with future development such as mobile app integration or other digital services.
 
 •	Promotion of Digital Governance by facilitating the larger aim of e-governance and the modernization or the upgrading of the economic utilities in Nepal.
+
+
+## Project Requirement :
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/12.png?raw=true)
+
+## Starting FrontEnd :
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/13.png?raw=true)
+
+## Starting Backend :
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/14.png?raw=true)
