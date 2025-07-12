@@ -61,7 +61,7 @@ The payment can be done through eSewa, Khalti, and bank transfer as the platform
 ## Website Name:
 NEA Connect
 
-![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/01.png?raw=true)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/00.png?raw=true)
 
 ## Website Structure :
 -->Home  :
@@ -92,47 +92,47 @@ NEA Connect
 ## Here is a screenshot of the NEA Connect interface: 
 
 
-![Homepage Screenshot](https://i.imgur.com/GgDAUb7.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/01.png?raw=true)
 
-![Homepage Screenshot](https://i.imgur.com/YWXqMOz.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/02.png?raw=true)
 
-![Homepage Screenshot](https://i.imgur.com/K6cFtgP.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/03.png?raw=true)
 
-![Homepage Screenshot](https://i.imgur.com/XnDBzci.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/04.png?raw=true)
 
 ## Our Services :
 
 •	Pay Bill online (Consists of Access Service and can pay bill through different online payment system such as Esewa ,Khalti and Other banking apps .Also can download the receipt ).
 
-![Homepage Screenshot](https://i.imgur.com/1IRxk4G.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/05.png?raw=true)
 
 
 
 
 •	Bill inquiry (user can search the bill by their Customer ID ).
 
-![Homepage Screenshot](https://i.imgur.com/szN4tDR.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/06.png?raw=true)
 
 
 •	Register Complaint (Can Register a complaint filling a form and submitting the complaint. Also can track the complaint status )
 
-![Homepage Screenshot](https://i.imgur.com/wFfDFKY.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/07.png?raw=true)
 
 
 •	Load shedding Schedule Viewer (user can get real-time outage information for your area ).
 
-![Homepage Screenshot](https://i.imgur.com/g2ixSBI.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/08.png?raw=true)
 
 •	Office Locator (Find NEA offices by district and location )
 
-![Homepage Screenshot](https://i.imgur.com/w55AwPa.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/09.png?raw=true)
 
 •	New Connection Request (User can apply for new electricity connection to their property ).
 
-![Homepage Screenshot](https://i.imgur.com/hPOjFuf.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/10.png?raw=true)
 ## Methodology / Development Plan
 
-![Homepage Screenshot](https://i.imgur.com/n3Boc39.png)
+![Homepage Screenshot](https://github.com/mesurajan/NEA-Connect/blob/main/Assets%20for%20readme/11.png?raw=true)
 
 ## Target Users
 The main target users of this platform include:
