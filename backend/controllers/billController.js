@@ -1,3 +1,15 @@
+// Get bill by shortBillId
+const getBillByShortId = async (req, res) => {
+  try {
+    const bill = await Bill.findOne({ shortBillId: req.params.shortBillId });
+    if (!bill) {
+      return res.status(404).json({ error: 'Bill not found for this Short Bill ID' });
+    }
+    res.json(bill);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 const Bill = require('../models/Bill');
 
 const createBill = async (req, res) => {
@@ -48,4 +60,4 @@ const searchBills = async (req, res) => {
   }
 };
 
-module.exports = { createBill, getBillsByUser, getAllBills, searchBills };
+module.exports = { createBill, getBillsByUser, getAllBills, searchBills, getBillByShortId };
