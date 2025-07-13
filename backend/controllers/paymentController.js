@@ -1,7 +1,10 @@
 const Payment = require('../models/Payment');
 
+
 const makePayment = async (req, res) => {
   try {
+    console.log("📥 Payment data received:", req.body);
+
     const payment = new Payment(req.body);
     await payment.save();
     res.status(201).json(payment);

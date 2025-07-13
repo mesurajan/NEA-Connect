@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const { string } = require('zod');
 
 const billSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  userId: { type: String, ref: 'User' },
   amount: Number,
   dueDate: Date,
   isPaid: { type: Boolean, default: false },

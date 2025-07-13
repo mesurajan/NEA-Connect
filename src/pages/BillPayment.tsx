@@ -38,28 +38,50 @@ const BillPayment = () => {
       color: 'bg-blue-600'
     }
   ];
+const handlePayment = async () => {
+  if (!customerId.trim() || !billAmount.trim()) {
+    toast.error('Please fill in all required fields');
+    return;
+  }
 
-  const handlePayment = async () => {
-    if (!customerId.trim() || !billAmount.trim()) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
+  if (parseFloat(billAmount) <= 0) {
+    toast.error('Please enter a valid amount');
+    return;
+  }
 
-    if (parseFloat(billAmount) <= 0) {
-      toast.error('Please enter a valid amount');
-      return;
-    }
+  setLoading(true);
 
-    setLoading(true);
-    
-    // Simulate payment processing
-    setTimeout(() => {
+  try {
+    const response = await fetch('http://localhost:5000/api/payments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: customerId, // assuming customerId is MongoDB _id
+        billId: '64a12345...', // if applicable (optional)
+        amount: parseFloat(billAmount),
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
       setPaymentSuccess(true);
-      setLoading(false);
-      toast.success('Payment processed successfully!');
-    }, 2000);
-  };
+      toast.success('Payment processed and saved!');
+    } else {
+      console.error('❌ Backend Error:', data);
+      toast.error(`Failed to save payment: ${data.error}`);
+    }
+  } catch (error) {
+    console.error('❌ Network Error:', error);
+    toast.error('Network error while processing payment');
+  }
 
+  setLoading(false);
+};
+
+  
   if (paymentSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-red-50">

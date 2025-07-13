@@ -13,33 +13,31 @@ const BillInquiry = () => {
   const [loading, setLoading] = useState(false);
 
   const handleBillSearch = async () => {
-    if (!customerId.trim()) {
-      toast.error('Please enter a valid Customer ID');
+    if (!customerId) {
+      toast.error('Please enter a Customer ID');
       return;
     }
 
     setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      // Mock bill data
-      setBillData({
-        customerId: customerId,
-        customerName: 'Ram Bahadur Sharma',
-        address: 'Kathmandu-15, Baneshwor',
-        billMonth: 'December 2024',
-        dueDate: '2024-12-25',
-        previousReading: 1250,
-        currentReading: 1380,
-        unitsConsumed: 130,
-        billAmount: 2850,
-        status: 'Unpaid',
-        serviceCharge: 150,
-        energyCharge: 2700
-      });
+    try {
+      const response = await fetch(`/api/bills/search?userId=${encodeURIComponent(customerId)}`);
+      if (!response.ok) {
+        throw new Error('Bill not found');
+      }
+      const data = await response.json();
+      if (Array.isArray(data) && data.length > 0) {
+        setBillData(data[0]); // Show the first bill found
+        toast.success('Bill details retrieved successfully');
+      } else {
+        setBillData(null);
+        toast.error('No bill found for this Customer ID');
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to retrieve bill details');
+      setBillData(null);
+    } finally {
       setLoading(false);
-      toast.success('Bill details retrieved successfully!');
-    }, 1500);
+    }
   };
 
   return (
