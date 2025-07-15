@@ -17,15 +17,36 @@ const loadRoutes = require('./routes/loadRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const connectionRoutes = require('./routes/connectionRoutes');
 const contactRoutes = require('./routes/contact');
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 
 // Set up Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+
+
+
+// Register Routes
+app.use('/api/users', userRoutes);
+app.use('/api/complaints', complaintRoutes);
+app.use('/api/bills', billRoutes);
+app.use('/api/applications', applicationRoutes);
+app.use('/api/schedules', loadRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/connections', connectionRoutes);
+app.use('/api', contactRoutes); // ✅ This activates /api/contact route
+app.use('/api/feedback', feedbackRoutes);
+app.use('/uploads', express.static('uploads'));// Serve files from the 'uploads' folder
+app.use("/api/auth", authRoutes);
+app.use('/api/users', userRoutes);
+
 
 
 
@@ -71,19 +92,7 @@ app.post('/upload', upload.single('file'), (req, res) => {
   });
 });
 
-// Serve files from the 'uploads' folder
-app.use('/uploads', express.static('uploads'));
 
-// Register Routes
-app.use('/api/users', userRoutes);
-app.use('/api/complaints', complaintRoutes);
-app.use('/api/bills', billRoutes);
-app.use('/api/applications', applicationRoutes);
-app.use('/api/schedules', loadRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/connections', connectionRoutes);
-app.use('/api', contactRoutes); // ✅ This activates /api/contact route
- 
 
 // Start the server
 mongoose.connect(process.env.MONGO_URI, {

@@ -19,6 +19,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const Index = () => {
   const navigate = useNavigate();
+  const [user, setUser] = React.useState<any>(null);
+
+React.useEffect(() => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    try {
+      const parsed = JSON.parse(storedUser);
+      fetch('http://localhost:5000/api/users/me', {
+        headers: {
+          Authorization: `Bearer ${parsed.token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => setUser(data))
+        .catch(() => setUser(null));
+    } catch {
+      setUser(null);
+    }
+  }
+}, []);
+
 
   const handleQuickBillCheck = () => {
     navigate('/bill-inquiry');
@@ -29,6 +50,13 @@ const Index = () => {
   };
 
   const services = [
+       {
+      title: "New Connection Request",
+      description: "Apply for new electricity connection to your property",
+      icon: Plus,
+      color: "bg-purple-600",
+      href: "/new-connection"
+    },
     {
       title: "Pay Bill Online",
       description: "Pay your electricity bill using eSewa, Khalti or bank transfer",
@@ -36,27 +64,7 @@ const Index = () => {
       color: "bg-green-600",
       href: "/bill-payment"
     },
-    {
-      title: "Bill Inquiry",
-      description: "Check your electricity bill using Customer ID",
-      icon: FileText,
-      color: "bg-blue-600",
-      href: "/bill-inquiry"
-    },
-    {
-      title: "Register Complaint",
-      description: "Submit and track your complaints with status updates",
-      icon: MessageSquare,
-      color: "bg-red-600",
-      href: "/complaints"
-    },
-    {
-      title: "Load Shedding Updates",
-      description: "Get real-time outage information for your area",
-      icon: Clock,
-      color: "bg-orange-600",
-      href: "/load-shedding"
-    },
+
     {
       title: "Office Locator",
       description: "Find NEA offices by district and location",
@@ -65,12 +73,30 @@ const Index = () => {
       href: "/office-locator"
     },
     {
-      title: "New Connection Request",
-      description: "Apply for new electricity connection to your property",
-      icon: Plus,
-      color: "bg-purple-600",
-      href: "/new-connection"
+      title: "Bill Inquiry",
+      description: "Check your electricity bill using Customer ID",
+      icon: FileText,
+      color: "bg-blue-600",
+      href: "/bill-inquiry"
+    },
+
+    {
+      title: "Load Shedding Updates",
+      description: "Get real-time outage information for your area",
+      icon: Clock,
+      color: "bg-orange-600",
+      href: "/load-shedding"
+    },
+  
+    {
+      title: "Register Complaint",
+      description: "Submit and track your complaints with status updates",
+      icon: MessageSquare,
+      color: "bg-red-600",
+      href: "/complaints"
     }
+
+ 
   ];
 
   const stats = [
@@ -99,11 +125,21 @@ const Index = () => {
               <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium">Home</Link>
               <Link to="/dashboard" className="text-gray-700 hover:text-blue-600 font-medium">Dashboard</Link>
               <Link to="/contact" className="text-gray-700 hover:text-blue-600 font-medium">Contact</Link>
-              <Button className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700">
-                <Phone className="h-4 w-4 mr-2" />
-                Support
-              </Button>
-            </nav>
+              <Link to="/support" className="ml-10">
+                <Button className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white flex items-center space-x-2">
+                  <Phone className="h-4 w-4" />
+                  <span>Feedback</span>
+                </Button>
+              </Link>
+
+              <Button variant="outline"className="border-red-600 text-red-600 hover:bg-red-50"
+              onClick={() => {localStorage.removeItem('user');window.location.href = "/login"; // or use navigate('/login') if inside a React component
+               }}>Logout</Button>
+
+
+
+
+          </nav>
           </div>
         </div>
       </header>
