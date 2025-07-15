@@ -124,7 +124,7 @@ const BillInquiry = () => {
             <CardHeader>
               <CardTitle className="text-green-600">Bill Details Found</CardTitle>
               <CardDescription>
-                Bill information for Customer ID: {billData.customerId}
+                Bill information for Customer ID: {billData.uid}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -135,7 +135,7 @@ const BillInquiry = () => {
                     <div className="mt-2 space-y-1">
                       <p className="text-sm"><strong>Name:</strong> {billData.customerName}</p>
                       <p className="text-sm"><strong>Address:</strong> {billData.address}</p>
-                      <p className="text-sm"><strong>Customer ID:</strong> {billData.customerId}</p>
+                      <p className="text-sm"><strong>Customer ID:</strong> {billData.uid}</p>
                     </div>
                   </div>
                   

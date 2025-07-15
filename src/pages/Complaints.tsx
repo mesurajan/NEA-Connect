@@ -325,6 +325,13 @@ const handleTrackComplaint = async () => {
                         <p className="pl-1">or drag and drop</p>
                       </div>
                       <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                      {/* ✅ Show file name after selection */}
+      {file && (
+        <p className="mt-2 text-sm text-green-600 font-medium">
+          Selected file: {file.name}
+        </p>
+      )}
+
                     </div>
                   </div>
                 </div>
