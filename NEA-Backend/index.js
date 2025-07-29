@@ -5,10 +5,9 @@ const multer = require('multer');
 const gridfsStream = require('gridfs-stream');
 const fs = require('fs');
 const path = require('path');
-
 require('dotenv').config();
 
-// Import all route files
+// Import Routes
 const userRoutes = require('./routes/userRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const billRoutes = require('./routes/billRoutes');
@@ -20,21 +19,36 @@ const contactRoutes = require('./routes/contact');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-
-
-
-// Set up Express
+// Initialize Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ✅ CORS Configuration: Allow frontend origin with credentials
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:8080'];
 
-// Middleware
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // ✅ allow sending cookies/sessions
+}));
+
+// ✅ General Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static('uploads'));
 
+// ✅ Log all incoming requests (for debugging)
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.originalUrl}`);
+  next();
+});
 
-// Register Routes
+// ✅ Register Routes
 app.use('/api/users', userRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/bills', billRoutes);
@@ -42,67 +56,70 @@ app.use('/api/applications', applicationRoutes);
 app.use('/api/schedules', loadRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/connections', connectionRoutes);
-app.use('/api', contactRoutes); // ✅ This activates /api/contact route
+app.use('/api', contactRoutes); // e.g., /api/contact
 app.use('/api/feedback', feedbackRoutes);
-app.use('/uploads', express.static('uploads'));// Serve files from the 'uploads' folder
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes); // ✅ login, register, etc.
 
-
-
-
-
-
-// MongoDB connection
+// ✅ GridFS + Multer Setup
 const conn = mongoose.createConnection(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
 let gfs;
-
 conn.once('open', () => {
-  // Initialize GridFS
   gfs = gridfsStream(conn.db, mongoose.mongo);
-  gfs.collection('uploads');  // GridFS collection name
+  gfs.collection('uploads');
 });
 
-// Configure Multer for file uploads
+// File storage for temporary local upload
 const storage = multer.diskStorage({
-  destination: 'uploads/', // Store files temporarily in the 'uploads' folder
+  destination: 'uploads/',
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Add a unique name to the file
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
-
 const upload = multer({ storage });
 
-// Route to handle file uploads to GridFS
+// ✅ Upload Endpoint
 app.post('/upload', upload.single('file'), (req, res) => {
+  if (!gfs) {
+    return res.status(500).json({ error: 'GridFS not initialized' });
+  }
+
   const file = req.file;
-  const userId = req.body.userId;  // Get user ID (you can modify this to use actual authentication)
+  const userId = req.body.userId;
+
+  if (!file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
 
   const writeStream = gfs.createWriteStream({
     filename: file.filename,
-    metadata: { userId },  // Store the user ID in the file metadata
+    metadata: { userId },
     content_type: file.mimetype,
   });
 
   fs.createReadStream(file.path).pipe(writeStream);
 
   writeStream.on('close', (uploadedFile) => {
+    fs.unlinkSync(file.path); // Delete temp file
     res.status(200).json({ message: 'File uploaded successfully', file: uploadedFile });
+  });
+
+  writeStream.on('error', (err) => {
+    console.error('File upload error:', err);
+    res.status(500).json({ error: 'Failed to upload file' });
   });
 });
 
-
-
-// Start the server
+// ✅ Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
   .then(() => {
     console.log('✅ Connected to MongoDB');
-    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
   })
-  .catch(err => console.error('❌ MongoDB error:', err));
+  .catch(err => console.error('❌ MongoDB connection error:', err));

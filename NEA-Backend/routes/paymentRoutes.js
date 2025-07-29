@@ -6,7 +6,7 @@ const Bill = require('../models/Bill');
 const Payment = require('../models/Payment');
 const { makePayment, getPaymentsByUser } = require('../controllers/paymentController');
 
-// Shared function for saving verified payments
+// Shared helper to save verified payment and bill
 const saveVerifiedPayment = async ({
   name,
   phone,
@@ -77,13 +77,18 @@ router.get('/user/:userId', getPaymentsByUser);
 
 // --- Gateway Verification Routes ---
 
-// eSewa verification
+// eSewa payment verification
 router.post('/verify/esewa', async (req, res) => {
   const {
     amt, pid, rid,
     name, phone, userId, address,
-    billMonth, dueDate, previousReading, currentReading, unitsConsumed
+    billMonth, dueDate, previousReading, currentReading, unitsConsumed,
   } = req.body;
+
+  // Basic validation
+  if (!amt || !pid || !rid || !userId || !name) {
+    return res.status(400).json({ success: false, error: 'Missing required fields' });
+  }
 
   try {
     const verificationPayload = `
@@ -105,11 +110,17 @@ router.post('/verify/esewa', async (req, res) => {
 
     if (data.includes('<response_code>Success</response_code>')) {
       const { payment, shortBillId } = await saveVerifiedPayment({
-        name, phone, userId, address,
-        billMonth, dueDate,
-        previousReading, currentReading,
-        unitsConsumed, amount: parseFloat(amt),
-        paymentMethod: 'esewa'
+        name,
+        phone,
+        userId,
+        address,
+        billMonth,
+        dueDate,
+        previousReading,
+        currentReading,
+        unitsConsumed,
+        amount: parseFloat(amt),
+        paymentMethod: 'esewa',
       });
 
       return res.status(200).json({ success: true, shortBillId, payment });
@@ -118,13 +129,12 @@ router.post('/verify/esewa', async (req, res) => {
     }
   } catch (err) {
     console.error('❌ eSewa verify error:', err.message);
-    res.status(500).json({ success: false, error: 'Server error verifying eSewa payment' });
+    return res.status(500).json({ success: false, error: 'Server error verifying eSewa payment' });
   }
 });
 
-// Khalti verification
-router.post('/gateway/khalti/initiate', async (req, res) => { 
-
+// Khalti payment initiation
+router.post('/gateway/khalti/initiate', async (req, res) => {
   try {
     const { amount, return_url, purchase_order_id, purchase_order_name } = req.body;
 
@@ -143,7 +153,7 @@ router.post('/gateway/khalti/initiate', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Key ${process.env.KHALTI_PUBLIC_KEY}`, // Use your real public key in .env
+          Authorization: `Key ${process.env.KHALTI_PUBLIC_KEY}`,
           'Content-Type': 'application/json',
         },
       }
@@ -155,6 +165,5 @@ router.post('/gateway/khalti/initiate', async (req, res) => {
     return res.status(500).json({ error: 'Failed to initiate Khalti payment' });
   }
 });
-
 
 module.exports = router;
