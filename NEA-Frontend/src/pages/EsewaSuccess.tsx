@@ -8,13 +8,23 @@ import { Button } from '@/components/ui/button';
 interface PaymentData {
   name: string;
   userId: string;
-  amount: number;
-  createdAt: string;
+  address: string;
+  phone: string;
+  billMonth: string;
+  dueDate: string;
+  previousReading: number;
+  currentReading: number;
+  unitsConsumed: number;
 }
 
 interface Receipt {
   success: boolean;
-  payment: PaymentData;
+  payment: {
+    name: string;
+    userId: string;
+    amount: number;
+    createdAt: string;
+  };
   shortBillId: number;
   error?: string;
 }
@@ -26,28 +36,46 @@ const EsewaSuccess: React.FC = () => {
 
   useEffect(() => {
     const verifyEsewa = async () => {
-      const amt = searchParams.get('amt');
-      const pid = searchParams.get('pid');
-      const rid = searchParams.get('rid');
+      const base64Data = searchParams.get('data');
       const paymentData = JSON.parse(localStorage.getItem('pendingPayment') || '{}');
 
-      if (!amt || !pid || !rid) {
-        toast.error('Missing payment info in URL');
+      if (!base64Data) {
+        toast.error('Missing eSewa response data');
         navigate('/');
         return;
       }
 
       if (!paymentData || Object.keys(paymentData).length === 0) {
-        toast.error('No payment data found in localStorage!');
+        toast.error('Missing payment info in localStorage');
         navigate('/');
         return;
       }
 
       try {
+        const jsonStr = atob(base64Data);
+        const parsedEsewaResponse = JSON.parse(jsonStr);
+
+        console.log('✅ eSewa Response Decoded:', parsedEsewaResponse);
+
+        const {
+          total_amount,
+          transaction_uuid,
+          product_code,
+          signed_field_names,
+          signature,
+        } = parsedEsewaResponse;
+
         const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/verify/esewa`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amt, pid, rid, ...paymentData }),
+          body: JSON.stringify({
+            total_amount,
+            transaction_uuid,
+            product_code,
+            signed_field_names,
+            signature,
+            ...paymentData,
+          }),
         });
 
         const data: Receipt = await res.json();
@@ -61,7 +89,8 @@ const EsewaSuccess: React.FC = () => {
           navigate('/');
         }
       } catch (err) {
-        toast.error('Something went wrong!');
+        console.error('❌ eSewa verification failed:', err);
+        toast.error('Error verifying payment.');
         navigate('/');
       }
     };

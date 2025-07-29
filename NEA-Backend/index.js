@@ -1,3 +1,4 @@
+//index.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -18,7 +19,7 @@ const connectionRoutes = require('./routes/connectionRoutes');
 const contactRoutes = require('./routes/contact');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const authRoutes = require('./routes/authRoutes');
-
+const gatewayRoutes = require('./routes/gatewayRoutes');
 // Initialize Express
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -59,6 +60,8 @@ app.use('/api/connections', connectionRoutes);
 app.use('/api', contactRoutes); // e.g., /api/contact
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/auth', authRoutes); // ✅ login, register, etc.
+
+app.use('/api/gateway', require('./routes/gatewayRoutes'));
 
 // ✅ GridFS + Multer Setup
 const conn = mongoose.createConnection(process.env.MONGO_URI, {

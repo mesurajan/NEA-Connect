@@ -1,3 +1,4 @@
+//paymentController.js
 const Payment = require('../models/Payment');
 const Bill = require('../models/Bill');
 

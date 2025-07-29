@@ -1,3 +1,4 @@
+//bill payment page
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CreditCard, DollarSign, Building2, Smartphone, ArrowLeft, Zap, CheckCircle } from 'lucide-react';
@@ -7,6 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
+
+
+type Receipt = {
+  shortBillId?: string;
+};
 
 const BillPayment = () => {
   const [name, setName] = useState('');
@@ -25,7 +31,7 @@ const BillPayment = () => {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
 
-  const paymentMethods = [
+const paymentMethods = [
     {
       id: 'esewa',
       name: 'eSewa',
@@ -49,163 +55,197 @@ const BillPayment = () => {
     }
   ];
 
-type Receipt = {
-  shortBillId?: string;
-};
-
-
   const handlePayment = async () => {
-    if (!name.trim() || !phone.trim() || !customerId.trim() || !address.trim() || !billMonth.trim() || !dueDate.trim() || !previousReading.trim() || !currentReading.trim() || !unitsConsumed.trim() || !billAmount.trim()) {
+    if (
+      !name || !phone || !customerId || !address ||
+      !billMonth || !dueDate || !previousReading || !currentReading ||
+      !unitsConsumed || !billAmount
+    ) {
       toast.error('Please fill in all required fields');
       return;
     }
-    if (parseFloat(previousReading) < 0 || parseFloat(currentReading) < 0) {
-      toast.error('Please enter valid meter readings');
-      return;
-    }
-    if (parseFloat(unitsConsumed) <= 0) {
-      toast.error('Please enter a valid units consumed');
-      return;
-    }
-    if (parseFloat(billAmount) <= 0) {
-      toast.error('Please enter a valid amount');
-      return;
-    }
 
+  const parsedPrev = parseFloat(previousReading);
+  const parsedCurr = parseFloat(currentReading);
+  const parsedUnits = parseFloat(unitsConsumed);
+  const parsedAmount = parseFloat(billAmount);
+
+  if (
+    isNaN(parsedPrev) || isNaN(parsedCurr) ||
+    isNaN(parsedUnits) || isNaN(parsedAmount)
+  ) {
+    toast.error('❌ Please enter valid numeric values');
+    return;
+  }
 
 
     const paymentData = {
-    name,
-    phone,
-    userId: customerId,
-    address,
-    billMonth,
-    dueDate,
-    previousReading: parseFloat(previousReading),
-    currentReading: parseFloat(currentReading),
-    unitsConsumed: parseFloat(unitsConsumed),
-    amount: parseFloat(billAmount),
-    paymentMethod,
-  };
+      name,
+      phone,
+      userId: customerId,
+      address,
+      billMonth,
+      dueDate,
+      previousReading: parseFloat(previousReading),
+      currentReading: parseFloat(currentReading),
+      unitsConsumed: parseFloat(unitsConsumed),
+      amount: parseFloat(billAmount),
+      paymentMethod,
+    };
 
-  // Save payment data to localStorage before redirecting
-  localStorage.setItem('pendingPayment', JSON.stringify(paymentData));
-
-
+    localStorage.setItem('pendingPayment', JSON.stringify(paymentData));
 
     if (paymentMethod === 'esewa') {
-    handleEsewaPayment();
-    return;
-  }
-  
-  if (paymentMethod === 'khalti') {
-  handleKhaltiPayment();
-  return;
-}
+      handleEsewaPayment(paymentData);
+      return;
+    }
+
+    if (paymentMethod === 'khalti') {
+      handleKhaltiPayment();
+      return;
+    }
 
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payments`, {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          phone,
-          userId: customerId,
-          address,
-          billMonth,
-          dueDate,
-          previousReading: parseFloat(previousReading),
-          currentReading: parseFloat(currentReading),
-          unitsConsumed: parseFloat(unitsConsumed),
-          amount: parseFloat(billAmount),
-          paymentMethod,
-        }),
+        body: JSON.stringify(paymentData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setPaymentSuccess(true);
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Payment saved successfully!');
         setReceipt(data);
-        toast.success('Payment processed and saved!');
+        setPaymentSuccess(true);
       } else {
-        console.error('❌ Backend Error:', data);
-        toast.error(`Failed to save payment: ${data.error}`);
+        toast.error(data.error || 'Failed to save payment');
       }
     } catch (error) {
-      console.error('❌ Network Error:', error);
-      toast.error('Network error while processing payment');
+      console.error(error);
+      toast.error('Network error while saving payment');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-
-  const handleEsewaPayment = () => {
-  const totalAmount = parseFloat(billAmount);
-  const pid = `NEA-${Date.now()}`;
-  const successUrl = `https://nea-frontend-eosin.vercel.app/esewa-payment-success?amt=${totalAmount}&pid=${pid}`;
-  const failureUrl = `https://nea-frontend-eosin.vercel.app/payment-failed`;
-
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = 'https://esewa.com.np/epay/main';
-  const fields = {
-    amt: totalAmount,
-    psc: 0,
-    pdc: 0,
-    txAmt: 0,
-    tAmt: totalAmount,
-    pid: pid,
-    scd: 'EPAYTEST',
-    su: successUrl,
-    fu: failureUrl,
+  // ✅ New Improved eSewa Gateway Handler
+  type PaymentData = {
+    name: string;
+    phone: string;
+    userId: string;
+    address: string;
+    billMonth: string;
+    dueDate: string;
+    previousReading: number;
+    currentReading: number;
+    unitsConsumed: number;
+    amount: number;
+    paymentMethod: string;
   };
 
-  Object.entries(fields).forEach(([key, value]) => {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = key;
-    input.value = value.toString();
-    form.appendChild(input);
-  });
+  const handleEsewaPayment = (paymentData: PaymentData) => {
+  // ✅ Step 1: Validate before sending to backend
+  if (
+    !paymentData.name || !paymentData.phone || !paymentData.userId || !paymentData.address ||
+    !paymentData.billMonth || !paymentData.dueDate ||
+    isNaN(paymentData.previousReading) || isNaN(paymentData.currentReading) ||
+    isNaN(paymentData.unitsConsumed) || isNaN(paymentData.amount)
+  ) {
+    toast.error('❌ Missing or invalid fields in payment data');
+    return;
+  }
 
-  document.body.appendChild(form);
-  form.submit();
-};
+  // ✅ Step 2: Debug log to see what you are sending
+  console.log('🔍 eSewa Payment Payload:', paymentData);
 
-const handleKhaltiPayment = () => {
-  const amountInPaisa = parseFloat(billAmount) * 100;
+  // ✅ Step 3: Continue with your request
+  const transaction_uuid = `NEA-${Date.now()}`;
+  const product_code = 'EPAYTEST';
+  const total_amount = paymentData.amount;
 
-  const returnUrl = `https://nea-frontend-eosin.vercel.app/khalti-payment-success`;
+  const payload = {
+    ...paymentData,
+    transaction_uuid,
+    total_amount,
+    product_code,
+  };
 
-  fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/khalti/initiate`, {
+  fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/verify/esewa/initiate`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      amount: amountInPaisa,
-      return_url: returnUrl,
-      website_url: 'https://nea-frontend-eosin.vercel.app/',
-      purchase_order_id: `NEA-${Date.now()}`,
-      purchase_order_name: 'NEA Bill Payment',
-    }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.payment_url) {
-        window.location.href = data.payment_url;
+    .then(async (res) => {
+      const data = await res.json();
+
+      if (res.ok && data.su && data.fu && data.signature) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+         form.action = 'https://rc.esewa.com.np/epay/main';
+         const fields = {
+          amt: Math.round(data.total_amount).toString(), // ✅ ensure integer
+          psc: '0',
+          pdc: '0',
+          txAmt: '0',
+          tAmt: Math.round(data.total_amount).toString(), // ✅ ensure integer
+          pid: data.transaction_uuid,
+          scd: import.meta.env.VITE_ESEWA_MERCHANT_ID,
+          su: data.su,
+          fu: data.fu,
+        };
+
+
+        Object.entries(fields).forEach(([key, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = value as string;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
       } else {
-        toast.error('Failed to initiate Khalti payment');
+        toast.error(data?.error || '❌ eSewa initiation failed');
+        console.error('eSewa backend response error:', data);
       }
     })
     .catch((err) => {
-      console.error('Khalti initiation error:', err);
-      toast.error('Khalti network error');
+      console.error(err);
+      toast.error('❌ Network error during eSewa initiation');
     });
 };
 
+
+
+  const handleKhaltiPayment = () => {
+    const amountInPaisa = parseFloat(billAmount) * 100;
+    const returnUrl = 'http://localhost:5173/khalti-payment-success';
+
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/khalti/initiate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: amountInPaisa,
+        return_url: returnUrl,
+        purchase_order_id: `NEA-${Date.now()}`,
+        purchase_order_name: 'NEA Bill Payment',
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
+        } else {
+          toast.error('Failed to initiate Khalti payment');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error('Khalti initiation error');
+      });
+  };
 
 
 if (paymentSuccess) {
