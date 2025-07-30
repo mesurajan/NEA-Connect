@@ -1,5 +1,4 @@
-//bill payment page
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CreditCard, DollarSign, Building2, Smartphone, ArrowLeft, Zap, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
+
+
 
 
 type Receipt = {
@@ -30,8 +31,24 @@ const BillPayment = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
+  useEffect(() => {
+  const prev = parseFloat(previousReading);
+  const curr = parseFloat(currentReading);
 
-const paymentMethods = [
+  if (!isNaN(prev) && !isNaN(curr) && curr >= prev) {
+    const consumed = curr - prev;
+    setUnitsConsumed(consumed.toFixed(2)); // auto set units
+    setBillAmount((consumed * 20).toFixed(2)); // auto set amount (20 Rs/kWh)
+  } else {
+    setUnitsConsumed('');
+    setBillAmount('');
+  }
+}, [previousReading, currentReading]);
+
+
+
+
+  const paymentMethods = [
     {
       id: 'esewa',
       name: 'eSewa',
@@ -55,6 +72,24 @@ const paymentMethods = [
     }
   ];
 
+  // New function: auto-calculate unitsConsumed and billAmount
+  const handleReadingChange = (prev: string, curr: string) => {
+    setPreviousReading(prev);
+    setCurrentReading(curr);
+
+    const prevNum = parseFloat(prev);
+    const currNum = parseFloat(curr);
+
+    if (!isNaN(prevNum) && !isNaN(currNum) && currNum >= prevNum) {
+      const consumed = currNum - prevNum;
+      setUnitsConsumed(consumed.toString());
+      setBillAmount((consumed * 20).toFixed(2));
+    } else {
+      setUnitsConsumed('');
+      setBillAmount('');
+    }
+  };
+
   const handlePayment = async () => {
     if (
       !name || !phone || !customerId || !address ||
@@ -65,19 +100,18 @@ const paymentMethods = [
       return;
     }
 
-  const parsedPrev = parseFloat(previousReading);
-  const parsedCurr = parseFloat(currentReading);
-  const parsedUnits = parseFloat(unitsConsumed);
-  const parsedAmount = parseFloat(billAmount);
+    const parsedPrev = parseFloat(previousReading);
+    const parsedCurr = parseFloat(currentReading);
+    const parsedUnits = parseFloat(unitsConsumed);
+    const parsedAmount = parseFloat(billAmount);
 
-  if (
-    isNaN(parsedPrev) || isNaN(parsedCurr) ||
-    isNaN(parsedUnits) || isNaN(parsedAmount)
-  ) {
-    toast.error('❌ Please enter valid numeric values');
-    return;
-  }
-
+    if (
+      isNaN(parsedPrev) || isNaN(parsedCurr) ||
+      isNaN(parsedUnits) || isNaN(parsedAmount)
+    ) {
+      toast.error('❌ Please enter valid numeric values');
+      return;
+    }
 
     const paymentData = {
       name,
@@ -86,10 +120,10 @@ const paymentMethods = [
       address,
       billMonth,
       dueDate,
-      previousReading: parseFloat(previousReading),
-      currentReading: parseFloat(currentReading),
-      unitsConsumed: parseFloat(unitsConsumed),
-      amount: parseFloat(billAmount),
+      previousReading: parsedPrev,
+      currentReading: parsedCurr,
+      unitsConsumed: parsedUnits,
+      amount: parsedAmount,
       paymentMethod,
     };
 
@@ -129,7 +163,6 @@ const paymentMethods = [
     }
   };
 
-  // ✅ New Improved eSewa Gateway Handler
   type PaymentData = {
     name: string;
     phone: string;
@@ -145,79 +178,73 @@ const paymentMethods = [
   };
 
   const handleEsewaPayment = (paymentData: PaymentData) => {
-  // ✅ Step 1: Validate before sending to backend
-  if (
-    !paymentData.name || !paymentData.phone || !paymentData.userId || !paymentData.address ||
-    !paymentData.billMonth || !paymentData.dueDate ||
-    isNaN(paymentData.previousReading) || isNaN(paymentData.currentReading) ||
-    isNaN(paymentData.unitsConsumed) || isNaN(paymentData.amount)
-  ) {
-    toast.error('❌ Missing or invalid fields in payment data');
-    return;
-  }
+    if (
+      !paymentData.name || !paymentData.phone || !paymentData.userId || !paymentData.address ||
+      !paymentData.billMonth || !paymentData.dueDate ||
+      isNaN(paymentData.previousReading) || isNaN(paymentData.currentReading) ||
+      isNaN(paymentData.unitsConsumed) || isNaN(paymentData.amount)
+    ) {
+      toast.error('❌ Missing or invalid fields in payment data');
+      return;
+    }
 
-  // ✅ Step 2: Debug log to see what you are sending
-  console.log('🔍 eSewa Payment Payload:', paymentData);
+    console.log('🔍 eSewa Payment Payload:', paymentData);
 
-  // ✅ Step 3: Continue with your request
-  const transaction_uuid = `NEA-${Date.now()}`;
-  const product_code = 'EPAYTEST';
-  const total_amount = paymentData.amount;
+    const transaction_uuid = `NEA-${Date.now()}`;
+    const product_code = 'EPAYTEST';
+    const total_amount = paymentData.amount;
 
-  const payload = {
-    ...paymentData,
-    transaction_uuid,
-    total_amount,
-    product_code,
-  };
+    const payload = {
+      ...paymentData,
+      transaction_uuid,
+      total_amount,
+      product_code,
+    };
 
-  fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/verify/esewa/initiate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-    .then(async (res) => {
-      const data = await res.json();
-
-      if (res.ok && data.su && data.fu && data.signature) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-         form.action = 'https://rc.esewa.com.np/epay/main';
-         const fields = {
-          amt: Math.round(data.total_amount).toString(), // ✅ ensure integer
-          psc: '0',
-          pdc: '0',
-          txAmt: '0',
-          tAmt: Math.round(data.total_amount).toString(), // ✅ ensure integer
-          pid: data.transaction_uuid,
-          scd: import.meta.env.VITE_ESEWA_MERCHANT_ID,
-          su: data.su,
-          fu: data.fu,
-        };
-
-
-        Object.entries(fields).forEach(([key, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = value as string;
-          form.appendChild(input);
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-      } else {
-        toast.error(data?.error || '❌ eSewa initiation failed');
-        console.error('eSewa backend response error:', data);
-      }
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/verify/esewa/initiate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
-    .catch((err) => {
-      console.error(err);
-      toast.error('❌ Network error during eSewa initiation');
-    });
-};
+      .then(async (res) => {
+        const data = await res.json();
 
+        if (res.ok && data.su && data.fu && data.signature) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = 'https://rc.esewa.com.np/epay/main';
+          const fields = {
+            amt: Math.round(data.total_amount).toString(),
+            psc: '0',
+            pdc: '0',
+            txAmt: '0',
+            tAmt: Math.round(data.total_amount).toString(),
+            pid: data.transaction_uuid,
+            scd: import.meta.env.VITE_ESEWA_MERCHANT_ID,
+            su: data.su,
+            fu: data.fu,
+          };
 
+          Object.entries(fields).forEach(([key, value]) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value as string;
+            form.appendChild(input);
+          });
+
+          document.body.appendChild(form);
+          form.submit();
+        } else {
+          toast.error(data?.error || '❌ eSewa initiation failed');
+          console.error('eSewa backend response error:', data);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error('❌ Network error during eSewa initiation');
+      });
+  };
 
   const handleKhaltiPayment = () => {
     const amountInPaisa = parseFloat(billAmount) * 100;
@@ -466,26 +493,27 @@ if (paymentSuccess) {
   </div>
 
   <div>
-    <Label htmlFor="unitsConsumed">Electricity Consumed (kWh)</Label>
-    <Input
-      id="unitsConsumed"
-      type="number"
-      placeholder="Enter units consumed"
-      value={unitsConsumed}
-      onChange={(e) => setUnitsConsumed(e.target.value)}
-      className="mt-1"
-    />
+      <Label htmlFor="unitsConsumed">Electricity Consumed (kWh)</Label>
+  <Input
+    id="unitsConsumed"
+    type="number"
+    placeholder="Auto-calculated"
+    value={unitsConsumed}
+    readOnly
+    className="mt-1 bg-gray-100"
+  />
+
   </div>
   <div>
-    <Label htmlFor="billAmount">Bill Amount (Rs.)</Label>
-    <Input
-      id="billAmount"
-      type="number"
-      placeholder="Enter bill amount"
-      value={billAmount}
-      onChange={(e) => setBillAmount(e.target.value)}
-      className="mt-1"
-    />
+  <Label htmlFor="billAmount">Bill Amount (Rs.)</Label>
+  <Input
+    id="billAmount"
+    type="number"
+    placeholder="Auto-calculated"
+    value={billAmount}
+    readOnly
+    className="mt-1 bg-gray-100"
+  />
   </div>
 </CardContent>
 

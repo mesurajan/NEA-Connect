@@ -90,31 +90,6 @@ const Register = () => {
         <CardContent className="space-y-4">
           <form onSubmit={handleRegister} className="space-y-4">
 
-            {/* Profile Image */}
-            <div className="flex justify-center">
-              <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={imagePreview} />
-                  <AvatarFallback>
-                    <Camera className="h-8 w-8 text-muted-foreground" />
-                  </AvatarFallback>
-                </Avatar>
-                <label
-                  htmlFor="photo"
-                  className="absolute -bottom-1 -right-1 bg-primary text-white rounded-full p-1 cursor-pointer hover:bg-primary/90"
-                >
-                  <Camera className="h-3 w-3" />
-                </label>
-                <input
-                  id="photo"
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </div>
-            </div>
-
             {/* Name */}
             <div className="flex gap-2">
               <div className="space-y-2 w-1/2">
@@ -168,34 +143,7 @@ const Register = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Address</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Your address"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="pl-10"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Citizenship No.</Label>
-              <div className="relative">
-                <IdCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="1234-5678"
-                  value={formData.citizenship}
-                  onChange={(e) => setFormData({ ...formData, citizenship: e.target.value })}
-                  className="pl-10"
-                  required
-                />
-              </div>
-            </div>
-
+            
             {/* Passwords */}
             <div className="space-y-2">
               <Label>Password</Label>

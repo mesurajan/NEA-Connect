@@ -1,19 +1,26 @@
-
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const path = require('path');
 
-const SECRET = process.env.JWT_SECRET || "yourSecretKey"; // ✅ Load from .env if available
+const SECRET = process.env.JWT_SECRET || "yourSecretKey";
 
 // Register a new user
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, address, phone, citizenship } = req.body;
-    const photo = req.file ? req.file.filename : '';
+    console.log("Received registration data:", req.body);  // DEBUG
+
+    const { name, email, password, phone } = req.body;
+
+    if (!name || !email || !password || !phone) {
+      console.log("Missing fields:", { name, email, password, phone }); // DEBUG
+      return res.status(400).json({ message: 'Please provide all required fields' });
+    }
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+    if (existingUser) {
+      console.log("User already exists:", email); // DEBUG
+      return res.status(400).json({ message: 'User already exists' });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -21,66 +28,66 @@ const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      address,
       phone,
-      citizenship,
-      photo: `/uploads/${photo}`,
-       role: 'user' 
+      role: 'user',
     });
 
     await newUser.save();
-    res.status(201).json({ message: 'User registered successfully' });
 
+    console.log("User registered successfully:", newUser._id); // DEBUG
+    res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
+    console.error("Error registering user:", err);  // DEBUG full error
     res.status(500).json({ message: 'Error registering user', error: err.message });
   }
 };
-
 // Login user
 const loginUser = async (req, res) => {
   try {
+    console.log('[POST] /api/users/login');
+
     const { email, password } = req.body;
-    console.log("🔍 Attempting login with:", email, password);
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.log("❌ No user found with this email");
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    console.log("🔐 Comparing passwords...");
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-      console.log("❌ Password mismatch");
-      return res.status(400).json({ message: 'Invalid credentials' });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    console.log("✅ Login successful for user:", user.email);
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'yourSecretKey', {
+    // Generate JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1d',
     });
 
-   res.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
+    return res.json({
+      message: 'Login successful',
       token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
-
   } catch (error) {
-    console.error("❌ Error during login:", error);
-    res.status(500).json({ message: 'Login failed' });
+    console.error('Login error:', error);
+    return res.status(500).json({ message: 'Server error during login' });
   }
 };
 
+module.exports = { loginUser };
 
-
-// Get all users (optional admin feature)
+// Get all users (optional)
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password'); // Don't send passwords
+    const users = await User.find().select('-password');
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch users' });

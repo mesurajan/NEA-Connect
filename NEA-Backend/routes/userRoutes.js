@@ -1,24 +1,24 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
 const router = express.Router();
-const { registerUser, loginUser, getUsers } = require('../controllers/userController');
+const multer = require('multer');
+const { registerUser, loginUser } = require('../controllers/userController'); // Make sure loginUser is exported
 
-// Multer configuration for file upload
+// Multer setup
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Files saved in 'uploads' folder
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Make sure this folder exists
   },
-  filename: function (req, file, cb) {
-    // Unique filename with timestamp + original extension
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
 });
+
 const upload = multer({ storage });
 
-// Routes
+// Register route with photo upload middleware
 router.post('/register', upload.single('photo'), registerUser);
+
+// Login route (no file upload needed)
 router.post('/login', loginUser);
-router.get('/', getUsers); // Optional: List all users (no password)
 
 module.exports = router;
