@@ -114,29 +114,36 @@ const NewConnection = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-red-50">
-      {/* Header */}
-      <header className="bg-white shadow-lg border-b-4 border-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-600 to-red-600 p-2 rounded-lg">
-                <Zap className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">NEA Connect</h1>
-                <p className="text-sm text-gray-600">New Connection Request</p>
-              </div>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center text-gray-700 hover:text-blue-600 font-medium">
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Back to Home
-              </Link>
-            </nav>
+ <div className="min-h-screen bg-gradient-to-br from-blue-50 to-red-50">
+  {/* Header */}
+  <header className="bg-white shadow-lg border-b-4 border-blue-600">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center justify-between h-16">
+        {/* Back to Home now on the left */}
+        <nav className="flex items-center space-x-4">
+          <Link to="/" className="flex items-center text-gray-700 hover:text-blue-600 font-medium">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Home
+          </Link>
+        </nav>
+
+        {/* Logo and Title now on the right */}
+        <div className="flex items-center space-x-3">
+          <div className="bg-gradient-to-r from-blue-600 to-red-600 p-2 rounded-lg">
+            <Zap className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">NEA Connect</h1>
+            <p className="text-sm text-gray-600">New Connection Request</p>
           </div>
         </div>
-      </header>
+      </div>
+    </div>
+  </header>
+
+
+
+      
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">

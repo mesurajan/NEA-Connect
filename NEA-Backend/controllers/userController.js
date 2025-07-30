@@ -63,26 +63,26 @@ const loginUser = async (req, res) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id, role: user.role }, SECRET, {
       expiresIn: '1d',
     });
 
-    return res.json({
+    return res.status(200).json({
       message: 'Login successful',
       token,
+      role: user.role, // <-- 👈 IMPORTANT: Now included for frontend
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
       },
     });
+
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({ message: 'Server error during login' });
   }
 };
-
-module.exports = { loginUser };
 
 // Get all users (optional)
 const getUsers = async (req, res) => {
