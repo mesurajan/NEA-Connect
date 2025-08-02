@@ -113,19 +113,25 @@ const BillPayment = () => {
       return;
     }
 
-    const paymentData = {
-      name,
-      phone,
-      userId: customerId,
-      address,
-      billMonth,
-      dueDate,
-      previousReading: parsedPrev,
-      currentReading: parsedCurr,
-      unitsConsumed: parsedUnits,
-      amount: parsedAmount,
-      paymentMethod,
-    };
+    const transaction_uuid = `NEA-${Date.now()}`;
+
+   const paymentData = {
+    name,
+    phone,
+    userId: customerId,
+    address,
+    billMonth,
+    dueDate,
+    previousReading: parseFloat(previousReading),
+    currentReading: parseFloat(currentReading),
+    unitsConsumed: parseFloat(unitsConsumed),
+    amount: parseFloat(billAmount),
+    paymentMethod,
+    transaction_uuid,          // <- add here
+    product_code: 'EPAYTEST',  // <- add here (your merchant code)
+    total_amount: parseFloat(billAmount), // total amount for payment
+  };
+  
 
     localStorage.setItem('pendingPayment', JSON.stringify(paymentData));
 
@@ -190,7 +196,7 @@ const BillPayment = () => {
 
     console.log('🔍 eSewa Payment Payload:', paymentData);
 
-    const transaction_uuid = `NEA-${Date.now()}`;
+  const transaction_uuid = `NEA-${Date.now()}`;; // Use customerId as transaction ID
     const product_code = 'EPAYTEST';
     const total_amount = paymentData.amount;
 
@@ -200,6 +206,7 @@ const BillPayment = () => {
       total_amount,
       product_code,
     };
+  localStorage.setItem('pendingPayment', JSON.stringify(payload));
 
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/gateway/verify/esewa/initiate`, {
       method: 'POST',

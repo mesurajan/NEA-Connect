@@ -20,6 +20,7 @@ const contactRoutes = require('./routes/contact');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const authRoutes = require('./routes/authRoutes');
 const gatewayRoutes = require('./routes/gatewayRoutes');
+const evChargingRoutes = require('./routes/evChargingRoutes');
 // Initialize Express
 const app = express();
 const PORT = process.env.PORT || 5000;

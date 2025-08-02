@@ -66,7 +66,7 @@ const saveVerifiedPayment = async ({
   return { payment, shortBillId: bill.shortBillId };
 };
 
-// ✅ Utility to verify eSewa signature
+//  Utility to verify eSewa signature
 const verifyEsewaSignature = ({ responseBody, receivedSignature, secretKey }) => {
   const signedFieldNames = responseBody.signed_field_names.split(',');
   const signatureString = signedFieldNames
@@ -79,6 +79,7 @@ const verifyEsewaSignature = ({ responseBody, receivedSignature, secretKey }) =>
 
   return generatedSignature === receivedSignature;
 };
+
 
 // === NEW: eSewa Payment Initiation Route ===
 router.post('/verify/esewa/initiate', async (req, res) => {
@@ -107,10 +108,10 @@ router.post('/verify/esewa/initiate', async (req, res) => {
     }
 
     const transaction_uuid = `TXN-${Date.now()}`;
-    const product_code = 'EPAYTEST';  // sandbox product code
+    const product_code = process.env.ESEWA_MERCHANT_ID || 'EPAYTEST';  // sandbox product code
     const total_amount = parseFloat(amount).toFixed(2);
-    const success_url = `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/esewa-payment-success`;
-    const failure_url = `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/payment-failed`;
+   const success_url = process.env.ESEWA_CALLBACK_URL || 'http://localhost:8080/esewa-payment-success';
+   const failure_url = process.env.ESEWA_FAIL_URL || 'http://localhost:8080/esewa-payment-failed';
 
     const responseBody = {
       total_amount,
@@ -119,9 +120,11 @@ router.post('/verify/esewa/initiate', async (req, res) => {
       signed_field_names: 'total_amount,transaction_uuid,product_code',
     };
 
-    const signatureString = Object.entries(responseBody)
-      .map(([key, value]) => `${key}=${value}`)
-      .join(',');
+const signedFieldNames = responseBody.signed_field_names.split(',');
+
+const signatureString = signedFieldNames
+  .map(field => `${field}=${responseBody[field]}`)
+  .join(',');
 
     const hmac = crypto.createHmac('sha256', process.env.ESEWA_SECRET_KEY || '8gBm/:&EnhH.1/q(');
     hmac.update(signatureString);
@@ -238,7 +241,7 @@ router.post('/gateway/khalti/initiate', async (req, res) => {
       {
         amount,
         return_url,
-        website_url: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+        website_url: process.env.CLIENT_ORIGIN || 'http://localhost:8080',
         purchase_order_id,
         purchase_order_name,
       },

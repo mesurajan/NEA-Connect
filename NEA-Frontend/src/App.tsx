@@ -12,6 +12,7 @@ import BillInquiry from "./pages/BillInquiry";
 import Complaints from "./pages/Complaints";
 import LoadShedding from "./pages/LoadShedding";
 import OfficeLocator from "./pages/OfficeLocator";
+import EVCharging from "./pages/EVCharging";
 import Contact from "./pages/Contact";
 import Dashboard from "./pages/Dashboard";
 import NewConnection from "./pages/NewConnection";
@@ -54,13 +55,14 @@ const App = () => (
           <Route path="/verify-code" element={<VerifyCode />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/profile" element={<Profile />} />
+          
           <Route path="/esewa-payment-success" element={<EsewaSuccess />} />
           <Route path="/khalti-payment-success" element={<KhaltiSuccess />} />
-          
+          <Route path="/ev-charging" element={<EVCharging />} />
          <Route path="/admin-dashboard" element={
          <ProtectedRoute><AdminDashboard /></ProtectedRoute>
           } />
-          <Route path="/admin-dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>}/>
+          <Route path="/admin-dashboard" element={<ProtectedAdminRoute><AdminDashboard /></ProtectedAdminRoute>} />
 
           {/* 🔐 Protected routes */}
           <Route path="/dashboard" element={

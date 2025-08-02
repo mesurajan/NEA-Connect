@@ -13,7 +13,8 @@ import {
   CheckCircle,
   Users,
   Plus,
-  DollarSign
+  DollarSign,
+  Car
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -63,13 +64,38 @@ React.useEffect(() => {
   };
 
   const services = [
-       {
+
+    {
+      title: "Register Complaint",
+      description: "Submit and track your complaints with status updates",
+      icon: MessageSquare,
+      color: "bg-red-600",
+      href: "/complaints"
+    },
+
+{
+      title: "EV Charging Centre Locator",
+      description: "Find electric vehicle charging stations near you",
+      icon: Car,
+      color: "bg-teal-600",
+      href: "/ev-charging"
+},
+   {
+      title: "Office Locator",
+      description: "Find NEA offices by district and location",
+      icon: MapPin,
+      color: "bg-green-600",
+      href: "/office-locator"
+    },
+{
       title: "New Connection Request",
       description: "Apply for new electricity connection to your property",
       icon: Plus,
       color: "bg-purple-600",
       href: "/new-connection"
     },
+    
+ 
     {
       title: "Pay Bill Online",
       description: "Pay your electricity bill using eSewa, Khalti or bank transfer",
@@ -78,13 +104,8 @@ React.useEffect(() => {
       href: "/bill-payment"
     },
 
-    {
-      title: "Office Locator",
-      description: "Find NEA offices by district and location",
-      icon: MapPin,
-      color: "bg-green-600",
-      href: "/office-locator"
-    },
+
+
     {
       title: "Bill Inquiry",
       description: "Check your electricity bill using Customer ID",
@@ -99,17 +120,7 @@ React.useEffect(() => {
       icon: Clock,
       color: "bg-orange-600",
       href: "/load-shedding"
-    },
-  
-    {
-      title: "Register Complaint",
-      description: "Submit and track your complaints with status updates",
-      icon: MessageSquare,
-      color: "bg-red-600",
-      href: "/complaints"
     }
-
- 
   ];
 
   const stats = [
